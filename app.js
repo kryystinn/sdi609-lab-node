@@ -2,6 +2,15 @@
 var express = require('express');
 var app = express();
 
+var expressSession = require('express-session');
+app.use(expressSession({
+    secret: 'abcdefg',
+    resave: true,
+    saveUninitialized: true
+}));
+
+var crypto = require('crypto');
+
 var fileUpload = require('express-fileupload');
 app.use(fileUpload());
 
@@ -20,6 +29,8 @@ gestorBD.init(app,mongo);
 // Variables
 app.set('port', 8081);
 app.set('db','mongodb://admin:sdi@tiendamusica-shard-00-00-tqjmz.mongodb.net:27017,tiendamusica-shard-00-01-tqjmz.mongodb.net:27017,tiendamusica-shard-00-02-tqjmz.mongodb.net:27017/test?ssl=true&replicaSet=tiendamusica-shard-0&authSource=admin&retryWrites=true');
+app.set('clave','abcdefg');
+app.set('crypto',crypto);
 
 /**app.get('/usuarios', function(req, res) {
     res.send('ver usuarios');
@@ -30,7 +41,7 @@ app.get('/canciones', function(req, res) {
 */
 
 //Rutas/controladores por lógica
-require("./routes/rusuarios.js")(app, gestorBD); // (app, param1, param2, etc.)
+require("./routes/rusuarios.js")(app, swig, gestorBD); // (app, param1, param2, etc.)
 require("./routes/rcanciones.js")(app, swig, gestorBD); // (app, param1, param2, etc.)
 
 // lanzar el servidor
