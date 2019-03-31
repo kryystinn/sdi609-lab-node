@@ -54,7 +54,7 @@ module.exports = function(app, swig, gestorBD) {
             genero : req.body.genero,
             precio : req.body.precio,
             autor: req.session.usuario
-        }
+        };
         // Conectarse
         gestorBD.insertarCancion(cancion, function(id) {
             if (id == null) {
@@ -120,7 +120,7 @@ module.exports = function(app, swig, gestorBD) {
             nombre : req.body.nombre,
             genero : req.body.genero,
             precio : req.body.precio
-        }
+        };
         gestorBD.modificarCancion(criterio, cancion, function(result) {
             if (result == null) {
                 res.send("Error al modificar ");
@@ -129,7 +129,8 @@ module.exports = function(app, swig, gestorBD) {
                     if( result == null){
                         res.send("Error en la modificación");
                     } else {
-                        res.send("Modificado");
+                        //res.send("Modificado");
+                        res.redirect("/publicaciones");
                     }
                 });
             }
@@ -149,7 +150,7 @@ module.exports = function(app, swig, gestorBD) {
         } else {
             paso2ModificarAudio(files, id, callback); // SIGUIENTE
         }
-    };
+    }
     function paso2ModificarAudio(files, id, callback){
         if (files.audio != null) {
             var audio = files.audio;
@@ -163,7 +164,18 @@ module.exports = function(app, swig, gestorBD) {
         } else {
             callback(true); // FIN
         }
-    };
+    }
+    app.get('/cancion/eliminar/:id', function (req, res) {
+        var criterio = {"_id" : gestorBD.mongo.ObjectID(req.params.id) };
+        gestorBD.eliminarCancion(criterio,function(canciones){
+            if ( canciones == null ){
+                res.send(respuesta);
+            } else {
+                res.redirect("/publicaciones");
+            }
+        });
+    });
+
 
 
 

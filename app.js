@@ -33,7 +33,7 @@ routerUsuarioSession.use(function(req, res, next) {
         // dejamos correr la petición
         next();
     } else {
-        console.log("va a : "+req.session.destino)
+        console.log("va a : "+req.session.destino);
         res.redirect("/identificarse");
     }
 });
@@ -41,6 +41,29 @@ routerUsuarioSession.use(function(req, res, next) {
 //Aplicar routerUsuarioSession
 app.use("/canciones/agregar",routerUsuarioSession);
 app.use("/publicaciones",routerUsuarioSession);
+
+//routerUsuarioAutor
+var routerUsuarioAutor = express.Router();
+routerUsuarioAutor.use(function(req, res, next) {
+    console.log("routerUsuarioAutor");
+    var path = require('path');
+    var id = path.basename(req.originalUrl);
+// Cuidado porque req.params no funciona
+// en el router si los params van en la URL.
+    gestorBD.obtenerCanciones(
+        {_id: mongo.ObjectID(id) }, function (canciones) {
+            console.log(canciones[0]);
+            if(canciones[0].autor == req.session.usuario ){
+                next();
+            } else {
+                res.redirect("/tienda");
+            }
+        })
+});
+//Aplicar routerUsuarioAutor
+app.use("/cancion/modificar",routerUsuarioAutor);
+app.use("/cancion/eliminar",routerUsuarioAutor);
+
 
 //routerAudios
 var routerAudios = express.Router();
@@ -67,13 +90,7 @@ app.set('db','mongodb://admin:sdi@tiendamusica-shard-00-00-tqjmz.mongodb.net:270
 app.set('clave','abcdefg');
 app.set('crypto',crypto);
 
-/**app.get('/usuarios', function(req, res) {
-    res.send('ver usuarios');
-})
-app.get('/canciones', function(req, res) {
-    res.send('ver canciones');
-})
-*/
+
 
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app, swig, gestorBD); // (app, param1, param2, etc.)
@@ -82,4 +99,4 @@ require("./routes/rcanciones.js")(app, swig, gestorBD); // (app, param1, param2,
 // lanzar el servidor
 app.listen(app.get('port'), function() {
     console.log("Servidor activo");
-})
+});
