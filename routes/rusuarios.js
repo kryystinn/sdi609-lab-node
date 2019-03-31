@@ -15,12 +15,13 @@ module.exports = function(app, swig, gestorBD) {
         var usuario = {
             email : req.body.email,
             password : seguro
-        }
+        };
         gestorBD.insertarUsuario(usuario, function(id) {
             if (id == null){
                 res.send("Error al insertar ");
             } else {
-                res.send('Usuario Insertado ' + id);
+                //res.send('Usuario Insertado ' + id);
+                res.redirect("/identificarse");
             }
         });
     });
@@ -34,14 +35,15 @@ module.exports = function(app, swig, gestorBD) {
         var criterio = {
             email : req.body.email,
             password : seguro
-        }
+        };
         gestorBD.obtenerUsuarios(criterio, function(usuarios) {
             if (usuarios == null || usuarios.length == 0) {
                 req.session.usuario = null;
                 res.send("No identificado: ");
             } else {
                 req.session.usuario = usuarios[0].email;
-                res.send("identificado");
+                //res.send("identificado");
+                res.redirect("/publicaciones");
             }
         });
     });
