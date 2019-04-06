@@ -200,13 +200,14 @@ module.exports = function(app, swig, gestorBD) {
     app.get("/tienda", function(req, res) {
         var criterio = {};
         if( req.query.busqueda != null ){
-            criterio = { "nombre" : {$regex : ".*"+req.query.busqueda+".*"}};
+            criterio = { "nombre" : {$regex : ".*" + req.query.busqueda + ".*", $options:'i'}};
         }
 
         var pg = parseInt(req.query.pg); // Es String !!!
         if ( req.query.pg == null){ // Puede no venir el param
             pg = 1;
         }
+
         gestorBD.obtenerCancionesPg(criterio, pg , function(canciones, total ) {
             if (canciones == null) {
                 res.send("Error al listar ");
